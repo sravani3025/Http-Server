@@ -26,34 +26,37 @@ public class ServerListenerThread extends Thread {
     @Override
     public void run() {
         try {
-            Socket socket = serverSocket.accept();
 
-            LOGGER.info(" +Connection accepted" + socket.getInetAddress());
+            while (serverSocket.isBound() && !serverSocket.isClosed())  {
+                Socket socket = serverSocket.accept();
 
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
+                LOGGER.info(" +Connection accepted" + socket.getInetAddress());
 
-            // TODO we would read
+                InputStream inputStream = socket.getInputStream();
+                OutputStream outputStream = socket.getOutputStream();
 
-            // TODO we would write
+                // TODO we would read
 
-            String html = "<html><head><title>Java HTTP Server</title></head><body><h1>This page was using my simple Java Http Server</h1></body></html>";
+                // TODO we would write
 
-            final String CRLF = "\n\r"; //carriage return and line feed  13,10
+                String html = "<html><head><title>Java HTTP Server</title></head><body><h1>This page was using my simple Java Http Server</h1></body></html>";
 
-            String response =
-                    "HTTP/1.1 200 OK" + CRLF +  // Status Line  : HTTP VERSION  RESPONSE_CODE RESPONSE_MESSAGE
-                            "Content-Length: " + html.getBytes().length + CRLF +  // HEADER
-                            CRLF +
-                            html +
-                            CRLF + CRLF;
+                final String CRLF = "\n\r"; //carriage return and line feed  13,10
 
-            outputStream.write(response.getBytes());
+                String response =
+                        "HTTP/1.1 200 OK" + CRLF +  // Status Line  : HTTP VERSION  RESPONSE_CODE RESPONSE_MESSAGE
+                                "Content-Length: " + html.getBytes().length + CRLF +  // HEADER
+                                CRLF +
+                                html +
+                                CRLF + CRLF;
 
-            inputStream.close();
-            outputStream.close();
-            socket.close();
-            serverSocket.close();
+                outputStream.write(response.getBytes());
+
+                inputStream.close();
+                outputStream.close();
+                socket.close();
+            }
+            //  serverSocket.close(); ToDO: handle close
 
         } catch (IOException e) {
             e.printStackTrace();
